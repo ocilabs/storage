@@ -12,6 +12,13 @@ terraform {
 // --- terraform provider --- //
 
 // --- Administrator settings for storage resources --- //
+data "oci_objectstorage_namespace" "tenancy" {
+  depends_on = [
+    data.oci_identity_compartments.resident
+  ]
+  compartment_id = data.oci_identity_compartments.resident.compartment[0].id
+}
+
 data "oci_identity_compartments" "resident" {
   compartment_id = var.configuration.tenancy.id
   access_level   = "ANY"
@@ -20,12 +27,6 @@ data "oci_identity_compartments" "resident" {
   state          = "ACTIVE"
 }
 
-data "oci_objectstorage_namespace" "resident" {
-  depends_on = [
-    data.oci_identity_compartments.resident
-  ]
-  compartment_id = data.oci_identity_compartments.resident.compartment[0].id
-}
 data "oci_identity_compartments" "application" {
   compartment_id = var.configuration.tenancy.id
   access_level   = "ANY"

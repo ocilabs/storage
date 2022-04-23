@@ -8,7 +8,7 @@ resource "oci_objectstorage_bucket" "storage" {
     if  bucket.stage <= var.configuration.resident.stage
   }
   name           = each.value.name
-  namespace      = data.oci_objectstorage_namespace.resident.namespace
+  namespace      = data.oci_objectstorage_namespace.tenancy.namespace
   access_type    = each.value.access_type
   auto_tiering   = var.configuration.resident.stage > 1 ? "Enabled" : "Disabled"
   defined_tags   = var.assets.resident.defined_tags
