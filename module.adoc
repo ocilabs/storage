@@ -1,0 +1,35 @@
+[source,hcl]
+----
+// --- storage resources --- //
+module "database" {
+  source     = "github.com/ocilabs/database"
+  depends_on = [
+    module.configuration, 
+    module.resident, 
+    module.network, 
+    module.encryption
+  ]
+  providers  = {oci = oci.service}
+  options = {
+    ad       = null #Block volume Availability Domain name (AD1, AD2 or AD3)
+    #class    = var.class
+    size     = null #Size of the block volume in GB (integer)
+    #password = var.create_wallet == false ? "RANDOM" : "VAULT"
+  }
+  configuration = {
+    tenancy  = module.configuration.tenancy
+    resident = module.configuration.resident
+    storage  = module.configuration.storage
+  }
+  assets = {
+    encryption = module.encryption["main"]
+    network    = module.network["core"]
+    resident   = module.resident
+  }
+}
+output "storage" {
+  value = {for resource, parameter in module.database : resource => parameter}
+  sensitive = true
+}
+// --- storage resources --- //
+----
