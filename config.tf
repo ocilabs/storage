@@ -20,34 +20,34 @@ data "oci_objectstorage_namespace" "tenancy" {
 }
 
 data "oci_identity_compartments" "resident" {
-  compartment_id = var.configuration.tenancy.id
+  compartment_id = var.account.tenancy_id
   access_level   = "ANY"
   compartment_id_in_subtree = true
   name           = var.configuration.resident.name
   state          = "ACTIVE"
 }
 
-data "oci_identity_compartments" "application" {
-  compartment_id = var.configuration.tenancy.id
+data "oci_identity_compartments" "storage" {
+  compartment_id = var.account.tenancy_id
   access_level   = "ANY"
   compartment_id_in_subtree = true
-  name           = try(var.configuration.application.compartment, var.configuration.resident.name)
+  name           = try("${var.service.name}_${var.options.compartment}_compartment", var.service.name)
   state          = "ACTIVE"
 }
 // --- Administrator settings for storage resources --- //
 
 
 locals {
-  module_freeform_tags = {
-    # list of freeform tags, added to stack provided freeform tags
-    terraformed = "Please do not edit manually"
-  }
-  merged_freeform_tags = merge(local.module_freeform_tags, var.assets.resident.freeform_tags)
   access_type = {
     "PRIVATE"  = "NoPublicAccess",
     "PUBLIC"   = "ObjectRead",
     "DOWNLOAD" = "ObjectReadWithoutList"
   }
+  module_freeform_tags = {
+    # list of freeform tags, added to stack provided freeform tags
+    terraformed = "Please do not edit manually"
+  }
+  merged_freeform_tags = merge(local.module_freeform_tags, var.assets.resident.freeform_tags)
 }
 // Define the wait state for the data requests
 resource "null_resource" "previous" {}

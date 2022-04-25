@@ -13,7 +13,7 @@ resource "oci_objectstorage_bucket" "storage" {
   auto_tiering   = var.configuration.resident.stage > 1 ? "Enabled" : "Disabled"
   defined_tags   = var.assets.resident.defined_tags
   freeform_tags  = local.module_freeform_tags
-  kms_key_id     = var.configuration.resident.stage > 1 ? var.assets.encryption.keys[var.configuration.bucket.key] : null
+  kms_key_id     = var.configuration.resident.stage > 1 ? var.assets.encryption.keys[var.configuration.storage.bucket.key] : null
   metadata       = each.value.metadata
   object_events_enabled = each.value.object_events_enabled
   storage_tier   = each.value.storage_tier
